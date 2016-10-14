@@ -1,5 +1,5 @@
 %%%-------------------------------------------------------------------
-%%% @author Wastedpenguin
+%%% @author
 %%% @copyright (C) 2016, <COMPANY>
 %%% @doc
 %%%
@@ -7,7 +7,7 @@
 %%% Created : 30. sep 2016 14:14
 %%%-------------------------------------------------------------------
 -module(agenda).
--author("Wastedpenguin").
+-author().
 
 %% API
 -export([maak/0, insert/2, delete/2]).

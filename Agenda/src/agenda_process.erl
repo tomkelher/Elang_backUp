@@ -7,7 +7,7 @@
 %%% Created : 04. okt 2016 16:41
 %%%-------------------------------------------------------------------
 -module(agenda_process).
--author("Wastedpenguin").
+-author().
 
 %% API
 -export([start/0]).

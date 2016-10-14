@@ -1,5 +1,5 @@
 %%%-------------------------------------------------------------------
-%%% @author Wastedpenguin
+%%% @author
 %%% @copyright (C) 2016, <COMPANY>
 %%% @doc
 %%%
@@ -7,7 +7,7 @@
 %%% Created : 30. sep 2016 12:16
 %%%-------------------------------------------------------------------
 -module(process).
--author("Wastedpenguin").
+-author().
 
 %% API
 -export([loop/1, start/0]).
