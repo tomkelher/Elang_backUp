@@ -10,21 +10,22 @@
 -author("Tom").
 
 %% API
--export([start/0,loop/1]).
+-export([start/0,loop/1,add/2]).
 
 start() ->
-  create(),
+  Test = ets:new('Logboek', [ordered_set, {keypos, 1}, public]),
   PID = spawn(agenda_process, loop, [0]),
-  add(PID).
+  add(PID,Test).
 
-create() -> ets:new('Logboek', [ordered_set, {keypos, 1}]).
-add(PID) ->
+
+add(PID,Test) ->
+  PID ! {get, self()},
   Value = receive
             C -> C
-          end,
-  ets:insert_new({Value, "test"}),
+         end,
+  ets:insert_new(Test, {Value, calendar:now_to_universal_time(os:timestamp())}),
   PID ! inc,
-  timer:apply_after(5000, main,add,[PID]).
+  timer:apply_after(1000, agenda_process,add,[PID, Test]).
 
 
 loop(C) -> receive
