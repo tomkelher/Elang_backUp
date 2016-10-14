@@ -7,7 +7,7 @@
 %%% Created : 30. sep 2016 14:14
 %%%-------------------------------------------------------------------
 -module(agenda).
--author().
+-author("Tom").
 
 %% API
 -export([maak/0, insert/2, delete/2]).
