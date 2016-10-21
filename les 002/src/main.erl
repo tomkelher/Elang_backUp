@@ -24,12 +24,12 @@ smallestNumber(X,[Y|YS]) -> if(X<Y) -> smallestNumber(X,YS);
 
 %tel de getallen op de even posities bij elkaar op
 %main:somEvenPosities([5,2,3,1]).
+
 somEvenPosities([]) -> 0;
 somEvenPosities([_]) -> 0;
 somEvenPosities([_,Y|YS]) -> somEvenPosities(Y,YS).
 somEvenPosities(N,[]) -> N;
 somEvenPosities(N,[_,Y|YS]) -> somEvenPosities(N+Y,YS).
-
 
 
 
