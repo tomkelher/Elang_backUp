@@ -10,7 +10,7 @@
 -author("Eigenaar").
 
 %% API
--export([testSuiteOef1/0]).
+-export([]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 -record(studenten,{naam=[]}).
@@ -18,14 +18,11 @@
 
 %oef 1 -> studenten met minstens 3
 
-
-
-telAantalBuizen({Student, Examens}) ->
-  {student, lists:foldl(fun(#vakken{naam=_,punt=P},Teller) ->
-    if P>= 10 -> Teller;true -> Teller+1 end
-  end,
-  0,
-  Examens}.
+%telAantalBuizen({Student, Examens}) ->
+%  {student, lists:foldl(fun(#vakken{naam=_,punt=P},Teller) ->
+%    if P>= 10 -> Teller;true -> Teller+1 end
+%  end,
+%  0,  Examens}.
 
 %oef 2 -> studenten die op alles geslaagd zijn
 
