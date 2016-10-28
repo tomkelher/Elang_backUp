@@ -47,4 +47,7 @@ serial(C) -> receive
             {get,P} -> P!C, serial(C)
           end.
 
+Bepaaltijden(TabelNaam) -> ets:lookup_element(logboek,0,3).
+Bepaaltijden(X,)
+
 
