@@ -10,22 +10,34 @@
 -author("Eigenaar").
 
 %% API
--export([start/0,addEvent/2,serial/1]).
+-export([start/0,addEvent/3,serial/1,getEventMessage/0]).
 
 start() ->
-  Table = ets:new('Logboek', [ordered_set, {keypos, 1}, public,named_table]),
-  Var = ets:new('Logboek', [ordered_set, {keypos, 1}, public]),
+  ets:new('logboek', [ordered_set, {keypos, 1}, public,named_table]),
+  ets:new('messages', [ordered_set, {keypos, 1}, public,named_table]),
   Pid = spawn(klant, serial, [0]),
-  ets:insert_new(Var, {Pid}),
-  addEvent(Pid,"").
-%getEventMessage(Pid)-> _ .
+  register('Proces', Pid).
 
-addEvent(Pid, Event) ->
+getEventMessage()->
+  CurrentTime = calendar:local_time(),
+  EndTime = ets:lookup_element(logboek,0,3),
+  BeginTime = ets:lookup_element(logboek,0,2),
+  if ( BeginTime < CurrentTime)->
+      if ( EndTime > CurrentTime)->
+        ets:insert_new('messages', {"we got a match"})
+      end
+  end.
+
+
+%tijd: {{2009,9,7},{12,32,22}},{{2009,9,7},{12,32,22}}
+%tijd: {{yyyy,m,d},{hh,mm,ss}}
+addEvent(Event,BeginTime,EndTime) ->
+  Pid = whereis('Proces'),
   Pid ! {get, self()},
   Serial = receive
       C -> C
   end,
-  ets:insert_new('Logboek', {Serial, calendar:now_to_universal_time(os:timestamp()),Event}),
+  ets:insert_new('logboek', {Serial,BeginTime,EndTime,Event}),
   Pid ! inc.
 
 serial(C) -> receive
