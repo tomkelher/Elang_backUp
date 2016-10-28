@@ -13,7 +13,7 @@
 -export([start/0,loop/1,add/2]).
 
 start() ->
-  Test = ets:new('Logboek', [ordered_set, {keypos, 1}, public]),
+  Test = ets:new('Logboek', [ordered_set, {keypos, 1}, public,named_table]),
   PID = spawn(agenda_process, loop, [0]),
   add(PID,Test).
 
