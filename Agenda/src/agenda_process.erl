@@ -10,28 +10,34 @@
 -author("Tom").
 
 %% API
--export([start/0,loop/1,add/2]).
+-export([start/0,addAgenda/3,serial/1]).
 
 start() ->
-  Test = ets:new('Logboek', [ordered_set, {keypos, 1}, public,named_table]),
-  PID = spawn(agenda_process, loop, [0]),
-  add(PID,Test).
+  ets:new('logboek', [ordered_set, {keypos, 1}, public,named_table]),
+  ets:new('agenda', [ordered_set, {keypos, 1}, public,named_table]),
+  Pid = spawn(agenda_process, serial, [0]),
+  register('Proces', Pid).
 
 
-add(PID,Test) ->
-  PID ! {get, self()},
-  Value = receive
-            C -> C
-         end,
-  ets:insert_new(Test, {Value, calendar:now_to_universal_time(os:timestamp())}),
-  PID ! inc,
-  timer:apply_after(1000, agenda_process,add,[PID, Test]).
 
+%tijd: {{2009,9,7},{12,32,22}},{{2009,9,7},{12,32,22}}
+%tijd: {{yyyy,m,d},{hh,mm,ss}}
+addAgenda(Event,BeginTime,EndTime) ->
+  Pid = whereis('Proces'),
+  Pid ! {get, self()},
+  Serial = receive
+             C -> C
+           end,
+  ets:insert_new('agenda', {Serial,BeginTime,EndTime,Event}),
+  addLogboek(Serial,Event),
+  Pid ! inc.
 
-loop(C) -> receive
-             stop -> stopped;
-             reset -> loop(0);
-             inc -> loop(C+1);
-             {get,P} -> P!C, loop(C)
-           end.
+addLogboek(Serial,Title) ->
+  ets:insert_new('logboek', {Serial,  calendar:local_time(),Title}).
 
+serial(C) -> receive
+               stop -> stopped;
+               reset -> serial(0);
+               inc -> serial(C+1);
+               {get,P} -> P!C, serial(C)
+             end.
