@@ -22,12 +22,22 @@ getEventMessage()->
   CurrentTime = calendar:local_time(),
   EndTime = ets:lookup_element(logboek,0,3),
   BeginTime = ets:lookup_element(logboek,0,2),
-  if ( BeginTime < CurrentTime)->
-      if ( EndTime > CurrentTime)->
-        ets:insert_new('messages', {"we got a match"}),
-        ets:lookup_element(messages,0,0)
-      end
+  %if ( BeginTime < CurrentTime)->
+    %  if ( EndTime > CurrentTime)->
+  %    ets:insert_new('messages', {"we got a match"}),
+%     ets:lookup_element(messages,0,0)
+%     end
+% end.
+  List = ets:tab2list(logboek),
+  TijdList = keepDate(List).
+
+
+dateCheck(X) ->
+  Boolean = calendar:valid_date(X),
+  if(Boolean) -> false;
+    true-> true
   end.
+keepDate(List) -> lists:dropwhile(fun dateCheck/1, List).
 
 
 %tijd: {{2009,9,7},{12,32,22}},{{2009,9,7},{12,32,22}}
@@ -48,6 +58,5 @@ serial(C) -> receive
             inc -> serial(C+1);
             {get,P} -> P!C, serial(C)
           end.
-
 
 
