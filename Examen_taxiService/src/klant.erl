@@ -24,7 +24,8 @@ getEventMessage()->
   BeginTime = ets:lookup_element(logboek,0,2),
   if ( BeginTime < CurrentTime)->
       if ( EndTime > CurrentTime)->
-        ets:insert_new('messages', {"we got a match"})
+        ets:insert_new('messages', {"we got a match"}),
+        ets:lookup_element(messages,0,0)
       end
   end.
 
@@ -38,6 +39,7 @@ addEvent(Event,BeginTime,EndTime) ->
       C -> C
   end,
   ets:insert_new('logboek', {Serial,BeginTime,EndTime,Event}),
+
   Pid ! inc.
 
 serial(C) -> receive
@@ -47,7 +49,5 @@ serial(C) -> receive
             {get,P} -> P!C, serial(C)
           end.
 
-Bepaaltijden(TabelNaam) -> ets:lookup_element(logboek,0,3).
-Bepaaltijden(X,)
 
 
