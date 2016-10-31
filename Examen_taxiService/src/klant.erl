@@ -10,7 +10,7 @@
 -author("Eigenaar").
 
 %% API
--export([start/0,addEvent/3,serial/1,getEventMessage/0,serialMes/1,delete/0]).
+-export([start/0,addEvent/3,serial/1,getEventMessage/0,serialMes/1,deleteLists/0,clearAll/0]).
 
 start() ->
   ets:new('logboek', [ordered_set, {keypos, 1}, public,named_table]),
@@ -20,9 +20,20 @@ start() ->
   register('Message', PID),
   register('Proces', Pid).
 
-delete() ->
+deleteLists() ->
   ets:delete(logboek),
   ets:delete(messages).
+
+clearAll() ->
+  deleteLists(),
+  Pid = whereis('Proces'),
+  Pid ! reset,
+  Pid ! stop,
+  PID = whereis('Message'),
+  PID ! reset,
+  PID ! stop,
+  'the lists have been cleared, and the processess reseted and stopped'.
+
 
 getEventMessage()->
   Pid = whereis('Proces'),
@@ -62,13 +73,14 @@ serialMes(C) -> receive
                {set,P,X} -> P!C,serialMes(X)
              end.
 
-clearUpAndMatch(X) when X < 0 -> ets:tab2list(messages);
+clearUpAndMatch(X) when X < 0 -> 'No Event booked at this time';
 clearUpAndMatch(X) when X == '$end_of_table' -> empty;
 clearUpAndMatch(X) when X >= 0 ->
        PlannedBeginTime = ets:lookup_element(logboek,X,2),
        PlannedEndTime = ets:lookup_element(logboek,X,3),
+       Event = ets:lookup_element(logboek,X,4),
        LocalTime = calendar:local_time(),
-        if ( PlannedEndTime < LocalTime)-> ets:delete(logboek,X),clearUpAndMatch(X-1);
+       if ( PlannedEndTime < LocalTime)-> ets:delete(logboek,X),clearUpAndMatch(X-1);
         true ->
           if (PlannedBeginTime < LocalTime) ->
             Pid = whereis('Message'),
@@ -76,8 +88,8 @@ clearUpAndMatch(X) when X >= 0 ->
             Serial = receive
                        C -> C
                      end,
-            ets:insert_new('messages', {Serial,LocalTime,PlannedBeginTime,PlannedEndTime,"this place is booked"}),
-            Pid ! inc, 'Already booked';
+            ets:insert_new('messages', {Serial,LocalTime,Event, PlannedBeginTime,PlannedEndTime,"in progress"}),
+            Pid ! inc, 'there is an event booked now, check tab for more info';
             true -> clearUpAndMatch(X-1)
           end
         end.
