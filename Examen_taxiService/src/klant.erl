@@ -10,34 +10,23 @@
 -author("Eigenaar").
 
 %% API
--export([start/0,addEvent/3,serial/1,getEventMessage/0]).
+-export([start/0,addEvent/3,serial/1,getEventMessage/0,serialMes/1]).
 
 start() ->
   ets:new('logboek', [ordered_set, {keypos, 1}, public,named_table]),
   ets:new('messages', [ordered_set, {keypos, 1}, public,named_table]),
   Pid = spawn(klant, serial, [0]),
+  PID = spawn(klant, serialMes, [0]),
+  register('Message', PID),
   register('Proces', Pid).
 
 getEventMessage()->
-  CurrentTime = calendar:local_time(),
-  EndTime = ets:lookup_element(logboek,0,3),
-  BeginTime = ets:lookup_element(logboek,0,2),
-  %if ( BeginTime < CurrentTime)->
-    %  if ( EndTime > CurrentTime)->
-  %    ets:insert_new('messages', {"we got a match"}),
-%     ets:lookup_element(messages,0,0)
-%     end
-% end.
-  List = ets:tab2list(logboek),
-  TijdList = keepDate(List).
-
-
-dateCheck(X) ->
-  Boolean = calendar:valid_date(X),
-  if(Boolean) -> false;
-    true-> true
+  Pid = whereis('Proces'),
+  clearUpAndMatch(ets:last(logboek)),
+  ToSend = ets:last(logboek),
+  if ToSend == '$end_of_table' -> Pid ! reset;
+    true -> Pid ! {set, self(),ets:last(logboek) }
   end.
-keepDate(List) -> lists:dropwhile(fun dateCheck/1, List).
 
 
 %tijd: {{2009,9,7},{12,32,22}},{{2009,9,7},{12,32,22}}
@@ -56,7 +45,34 @@ serial(C) -> receive
             stop -> stopped;
             reset -> serial(0);
             inc -> serial(C+1);
-            {get,P} -> P!C, serial(C)
+            {get,P} -> P!C, serial(C);
+            {set,P,X} -> P!C,serial(X)
           end.
 
+serialMes(C) -> receive
+               stop -> stopped;
+               reset -> serialMes(0);
+               inc -> serialMes(C+1);
+               {get,P} -> P!C, serialMes(C);
+               {set,P,X} -> P!C,serialMes(X)
+             end.
 
+clearUpAndMatch(X) when X < 0 -> ets:tab2list(logboek);
+clearUpAndMatch(X) when X == '$end_of_table' -> empty;
+clearUpAndMatch(X) when X >= 0 ->
+       PlannedBeginTime = ets:lookup_element(logboek,X,3),
+       PlannedEndTime = ets:lookup_element(logboek,X,3),
+       LocalTime = calendar:local_time(),
+        if ( PlannedEndTime < LocalTime)-> ets:delete(logboek,X),clearUpAndMatch(X-1);
+        true ->
+          if (PlannedBeginTime < LocalTime) ->
+            Pid = whereis('Message'),
+            Pid ! {get, self()},
+            Serial = receive
+                       C -> C
+                     end,
+            ets:insert_new('messages', {Serial,LocalTime,PlannedBeginTime,PlannedEndTime,"this place is booked"}),
+            Pid ! inc;
+            true -> clearUpAndMatch(X-1)
+          end
+        end.
