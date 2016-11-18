@@ -53,9 +53,12 @@ addEvent(Event,BeginTime,EndTime) ->
   Serial = receive
       C -> C
   end,
-  ets:insert_new('logboek', {Serial,BeginTime,EndTime,Event}),
+  WriteOrNot = checkAndVal(ets:last(logboek),BeginTime,EndTime),
+  if(WriteOrNot == true) ->  ets:insert_new('logboek', {Serial,BeginTime,EndTime,Event}), Pid ! inc;
+    true -> 'These dates are either not available, malstructered or happen in the past'
+  end.
 
-  Pid ! inc.
+
 
 serial(C) -> receive
             stop -> stopped;
@@ -72,6 +75,29 @@ serialMes(C) -> receive
                {get,P} -> P!C, serialMes(C);
                {set,P,X} -> P!C,serialMes(X)
              end.
+
+checkAndVal(X,_,_) when X < 0 -> true;
+checkAndVal(X,_,_) when X == '$end_of_table' -> true;
+checkAndVal(X,Begin,Einde) ->
+PlannedBeginTime = ets:lookup_element(logboek,X,2),
+PlannedEndTime = ets:lookup_element(logboek,X,3),
+LocalTime = calendar:local_time(),
+if(Begin >= LocalTime)  ->
+  if(Einde>Begin) ->
+      if(Einde =< PlannedBeginTime) -> checkAndVal(X-1,Begin,Einde);
+          true ->
+          if(Begin >= PlannedEndTime) -> checkAndVal(X-1,Begin,Einde);
+            true -> false
+          end
+      end;
+  true -> false
+  end;
+  true -> false
+end.
+
+
+
+
 
 clearUpAndMatch(X) when X < 0 -> 'No Event booked at this time';
 clearUpAndMatch(X) when X == '$end_of_table' -> empty;
