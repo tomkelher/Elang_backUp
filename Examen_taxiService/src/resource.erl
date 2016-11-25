@@ -24,7 +24,7 @@ checkTimeLeft()->
   LocalTime = calendar:local_time(),
   Waarde = clearUp(ets:last(logboek)),
   if (Waarde == 'No Event booked') -> 'An event has yet to be booked';
-  true -> ets:lookup_element(logboek,0,2) - LocalTime
+  true -> calendar:time_difference(ets:lookup_element(logboek,0,2),LocalTime)
   end.
 
 clearUp(X) when X < 0 -> 'done';
