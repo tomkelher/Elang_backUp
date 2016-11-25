@@ -10,7 +10,7 @@
 -author("Eigenaar").
 
 %% API
--export([start/0,addEvent/3,serial/1,getEventMessage/0,serialMes/1,deleteLists/0,clearAll/0]).
+-export([start/0,addEvent/3,serial/1,getEventMessage/0,serialMes/1,deleteLists/0,clearAll/0,checkAndVal/3,clearUpAndMatch/1]).
 
 start() ->
   ets:new('logboek', [ordered_set, {keypos, 1}, public,named_table]),
@@ -22,7 +22,8 @@ start() ->
 
 deleteLists() ->
   ets:delete(logboek),
-  ets:delete(messages).
+  ets:delete(messages),
+  'the lists have been cleared'.
 
 clearAll() ->
   deleteLists(),
