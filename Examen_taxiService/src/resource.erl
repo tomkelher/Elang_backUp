@@ -16,7 +16,7 @@ updateEvents(Serial,Event,BeginTime,EndTime) ->
   ets:update_element(logboek, Serial,[{Event, BeginTime,EndTime}]).
 
 deleteEvents(Serial)->
-  delete(logboek, Serial).
+  ets:delete(logboek, Serial).
 
 %The Time left untill the next event starts
 checkTimeLeft()->
@@ -32,6 +32,7 @@ clearUp(X) when X == '$end_of_table' -> 'No Event booked';
 clearUp(X) when X >= 0 ->
   PlannedEndTime = ets:lookup_element(logboek,X,3),
   LocalTime = calendar:local_time(),
-  if ( PlannedEndTime < LocalTime)-> ets:delete(logboek,X),clearUp(X-1)
+  if ( PlannedEndTime < LocalTime)-> ets:delete(logboek,X),clearUp(X-1);
+  true -> clearUp(X-1)
   end.
 

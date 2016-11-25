@@ -10,4 +10,5 @@
 -author("Eigenaar").
 
 %% API
--export([]).
+-export([start/0]).
+start() ->  observer:start().
