@@ -27,7 +27,6 @@ checkTimeLeft()->
   true -> ets:lookup_element(logboek,0,2) - LocalTime
   end.
 
-
 clearUp(X) when X < 0 -> 'done';
 clearUp(X) when X == '$end_of_table' -> 'No Event booked';
 clearUp(X) when X >= 0 ->
@@ -35,5 +34,4 @@ clearUp(X) when X >= 0 ->
   LocalTime = calendar:local_time(),
   if ( PlannedEndTime < LocalTime)-> ets:delete(logboek,X),clearUp(X-1)
   end.
-
 
