@@ -10,7 +10,7 @@
 -author("Eigenaar").
 
 %% API
--export([start/0,addEvent/3,serial/1,getEventMessage/0,serialMes/1,deleteLists/0,clearAll/0,checkAndVal/3,clearUpAndMatch/1]).
+-export([start/0,serial/1,serialMes/1,deleteLists/0,clearAll/0]).
 
 start() ->
   ets:new('logboek', [ordered_set, {keypos, 1}, public,named_table]),
@@ -36,28 +36,28 @@ clearAll() ->
   'the lists have been cleared, and the processess reseted and stopped'.
 
 
-getEventMessage()->
-  Pid = whereis('Proces'),
-  Message = clearUpAndMatch(ets:last(logboek)),
-  ToSend = ets:last(logboek),
-  if ToSend == '$end_of_table' -> Pid ! reset;
-    true -> Pid ! {set, self(),ets:last(logboek) }
-  end,
-  Message.
-
-
-%tijd: {{2009,9,7},{12,32,22}},{{2009,9,7},{12,32,22}}
-%tijd: {{yyyy,m,d},{hh,mm,ss}}
-addEvent(Event,BeginTime,EndTime) ->
-  Pid = whereis('Proces'),
-  Pid ! {get, self()},
-  Serial = receive
-      C -> C
-  end,
-  WriteOrNot = checkAndVal(ets:last(logboek),BeginTime,EndTime),
-  if(WriteOrNot == true) ->  ets:insert_new('logboek', {Serial,BeginTime,EndTime,Event}), Pid ! inc;
-    true -> 'These dates are either not available, malstructered or happen in the past'
-  end.
+%%getEventMessage()->
+%%  Pid = whereis('Proces'),
+%%  Message = clearUpAndMatch(ets:last(logboek)),
+%%  ToSend = ets:last(logboek),
+%%  if ToSend == '$end_of_table' -> Pid ! reset;
+%%    true -> Pid ! {set, self(),ets:last(logboek) }
+%%  end,
+%%  Message.
+%%
+%%
+%%%tijd: {{2009,9,7},{12,32,22}},{{2009,9,7},{12,32,22}}
+%%%tijd: {{yyyy,m,d},{hh,mm,ss}}
+%%addEvent(Event,BeginTime,EndTime) ->
+%%  Pid = whereis('Proces'),
+%%  Pid ! {get, self()},
+%%  Serial = receive
+%%      C -> C
+%%  end,
+%%  WriteOrNot = checkAndVal(ets:last(logboek),BeginTime,EndTime),
+%%  if(WriteOrNot == true) ->  ets:insert_new('logboek', {Serial,BeginTime,EndTime,Event}), Pid ! inc;
+%%    true -> 'These dates are either not available, malstructered or happen in the past'
+%%  end.
 
 
 
@@ -77,46 +77,48 @@ serialMes(C) -> receive
                {set,P,X} -> P!C,serialMes(X)
              end.
 
-checkAndVal(X,_,_) when X < 0 -> true;
-checkAndVal(X,_,_) when X == '$end_of_table' -> true;
-checkAndVal(X,Begin,Einde) ->
-PlannedBeginTime = ets:lookup_element(logboek,X,2),
-PlannedEndTime = ets:lookup_element(logboek,X,3),
-LocalTime = calendar:local_time(),
-if(Begin >= LocalTime)  ->
-  if(Einde>Begin) ->
-      if(Einde =< PlannedBeginTime) -> checkAndVal(X-1,Begin,Einde);
-          true ->
-          if(Begin >= PlannedEndTime) -> checkAndVal(X-1,Begin,Einde);
-            true -> false
-          end
-      end;
-  true -> false
-  end;
-  true -> false
-end.
 
 
-
-
-
-clearUpAndMatch(X) when X < 0 -> 'No Event booked at this time';
-clearUpAndMatch(X) when X == '$end_of_table' -> empty;
-clearUpAndMatch(X) when X >= 0 ->
-       PlannedBeginTime = ets:lookup_element(logboek,X,2),
-       PlannedEndTime = ets:lookup_element(logboek,X,3),
-       Event = ets:lookup_element(logboek,X,4),
-       LocalTime = calendar:local_time(),
-       if ( PlannedEndTime < LocalTime)-> ets:delete(logboek,X),clearUpAndMatch(X-1);
-        true ->
-          if (PlannedBeginTime < LocalTime) ->
-            Pid = whereis('Message'),
-            Pid ! {get, self()},
-            Serial = receive
-                       C -> C
-                     end,
-            ets:insert_new('messages', {Serial,LocalTime,Event, PlannedBeginTime,PlannedEndTime,"in progress"}),
-            Pid ! inc, 'there is an event booked now, check tab for more info';
-            true -> clearUpAndMatch(X-1)
-          end
-        end.
+%%checkAndVal(X,_,_) when X < 0 -> true;
+%%checkAndVal(X,_,_) when X == '$end_of_table' -> true;
+%%checkAndVal(X,Begin,Einde) ->
+%%PlannedBeginTime = ets:lookup_element(logboek,X,2),
+%%PlannedEndTime = ets:lookup_element(logboek,X,3),
+%%LocalTime = calendar:local_time(),
+%%if(Begin >= LocalTime)  ->
+%%  if(Einde>Begin) ->
+%%      if(Einde =< PlannedBeginTime) -> checkAndVal(X-1,Begin,Einde);
+%%          true ->
+%%          if(Begin >= PlannedEndTime) -> checkAndVal(X-1,Begin,Einde);
+%%            true -> false
+%%          end
+%%      end;
+%%  true -> false
+%%  end;
+%%  true -> false
+%%end.
+%%
+%%
+%%
+%%
+%%
+%%clearUpAndMatch(X) when X < 0 -> 'No Event booked at this time';
+%%clearUpAndMatch(X) when X == '$end_of_table' -> empty;
+%%clearUpAndMatch(X) when X >= 0 ->
+%%       PlannedBeginTime = ets:lookup_element(logboek,X,2),
+%%       PlannedEndTime = ets:lookup_element(logboek,X,3),
+%%       Event = ets:lookup_element(logboek,X,4),
+%%       LocalTime = calendar:local_time(),
+%%       if ( PlannedEndTime < LocalTime)-> ets:delete(logboek,X),clearUpAndMatch(X-1);
+%%        true ->
+%%          if (PlannedBeginTime < LocalTime) ->
+%%            Pid = whereis('Message'),
+%%            Pid ! {get, self()},
+%%            Serial = receive
+%%                       C -> C
+%%                     end,
+%%            ets:insert_new('messages', {Serial,LocalTime,Event, PlannedBeginTime,PlannedEndTime,"in progress"}),
+%%            Pid ! inc, 'there is an event booked now, check tab for more info';
+%%            true -> clearUpAndMatch(X-1)
+%%          end
+%%        end.

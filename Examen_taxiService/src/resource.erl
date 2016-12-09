@@ -18,13 +18,14 @@ updateEvents(Serial,Event,BeginTime,EndTime) ->
 deleteEvents(Serial)->
   ets:delete(logboek, Serial).
 
-%The Time left untill the next event starts
-checkTimeLeft()->
-  %Delete the invalid ones that are passed and check when the next date will begin
+%The Time left
+  %Delete the invalid ones that are passed and check when the next date will begintill the next event starts
+  checkTimeLeft()->
   LocalTime = calendar:local_time(),
   Waarde = clearUp(ets:last(logboek)),
   if (Waarde == 'No Event booked') -> 'An event has yet to be booked';
-  true -> calendar:time_difference(ets:lookup_element(logboek,0,2),LocalTime)
+  true -> {Dagen,{Uren,Minuten,Seconden}} = calendar:time_difference(LocalTime,ets:lookup_element(logboek,0,2)),
+  io:fwrite('days left: ~B, Hours: ~B, Minutes: ~B, Seconden: ~B, EndLine: ', [Dagen, Uren,Minuten,Seconden])
   end.
 
 clearUp(X) when X < 0 -> 'done';
@@ -35,4 +36,3 @@ clearUp(X) when X >= 0 ->
   if ( PlannedEndTime < LocalTime)-> ets:delete(logboek,X),clearUp(X-1);
   true -> clearUp(X-1)
   end.
-

@@ -1,0 +1,96 @@
+Dia 6:
+	f(n) = 14278943n² + 35797n-8
+	g(n) = n³ - 88n² - 53453453n - 12
+	Vanaf een gegeven momen zal g(n) altijd groter zijn dan f(n) = assymptotisch domineren
+	-> f is van orde g
+	-> Als je een kwadratische functie hebt kun je deze altijd laten domineren door n²
+
+
+
+dia 12:
+	i = 1		2	3	4	5	...n
+ 	j = 1		4	9	16	25	...+ n²
+ 	j = n²		n²	n²	n²	n²	...n²
+	n * (n²) => O(n³)
+
+
+
+dia 13:
+	-->  recursie vergelijking vereenvoudigd de vorige berekening
+
+	for (int i = 1;i<n+1)     	for (int i = 1;i<n)		i ==n+1
+	{				{
+		for(j=...)	= 		for(j=...)	+ 	for(j=1;j<(n+1)²...)
+	}				}
+	
+
+	T (n+1) 		= 	T(n) 			+ 	(n+1)²
+
+
+
+dia 14:
+	[14, 15, 18, 155, 208, 2017, 4212, 5008]
+	-> een nummer zoeken in lijst, alles doorlopen en kijken of je die vindt (3.2.1)
+	-> vertrekken in het midden van de gesorteerde lijst en een weg kiezen -> helft maar doorlopen (3.2.2)
+
+
+
+dia 16:
+	stel dat je i laat lopen tot n + 1 -> j tot (n+1)² en k gewoon tot j dan is de tijd
+	T = 1+2+3+4+…(n+1)² voor die laatste extra stap. (dia 17)
+	-> de binnenkan van dia 16 = n * n² * n² = n^5
+
+
+dia 18 - 23: 
+	n = 3
+	a = 1
+	 b = 1 .... 3     	TOT 4 (bij n+1) 
+	  i = 1...b		OOK VERDER		=> i = 1 tot 4 -> 3 meer nodig
+	
+	a = 2
+	 b = 2 .... 3		TOT 4  
+	  i = 2...b		OOK VERDER		=> i = 2 tot 4 -> 2 meer nodig
+	
+	a = 3
+	 b = 3 .... 3  		TOT 4 
+	  i = 3...b		OOK VERDER		=> 1 = 3 tot 4 -> 1 meer nodig
+
+	n = n + 1
+	a = 4
+	 b = 4...4		=> 1
+	  I = 4...4
+	
+	tijdscomplexiteit = n * n² = n³
+
+
+
+dia 24:
+	de code = de zoekfunctie die in het midden begint die ook eerder omschreven is.
+
+
+VANAF HIER STAAT DE CODE OP TOLEDO
+dia 27:
+	Tijdscomplexiteit: O(n²) -> zie erlang file
+
+
+dia 28:
+        Tqs(0) = c
+        Tqs(n) = c + O(n) + Tqs(eersteHelft) + Tqs(tweedeHelft)
+	Tqs(n) = c + O(n) + Tqs(n/2) + Tqs (n/2)
+	Tqs(n) = c + O(n) + Tqs(0) + Tqs(n-1)    -> O(n²)
+	TIJDSCOMPLEXITEIT KIJKT NAAR HET SLECHTSE GEVAL -> splising van 0 en n-1	
+
+dia 29:
+	O(n²)
+
+
+dia 30:
+	thuis doen	
+
+dia 31:
+	T(0,0) = 0 = c
+	T(0,n) = 0 = c
+	T(n,0) = 0 = c
+	T(n,n) = n/2
+
+----------------------------------------einde dias----------------------------------------

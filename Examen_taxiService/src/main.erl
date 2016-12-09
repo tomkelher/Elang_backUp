@@ -10,5 +10,12 @@
 -author("Eigenaar").
 
 %% API
--export([start/0]).
+-export([start/0,testCode/0,testCodePrev/0]).
 start() ->  observer:start().
+
+testCodePrev() ->
+  klant:start(),
+  klant:addEvent(event,{{2021,9,7},{12,32,22}},{{2022,9,7},{12,32,22}}),
+  klant:addEvent(event,{{2025,9,7},{12,32,22}},{{2031,9,7},{12,32,22}}).
+
+testCode() -> 'nothing yet'.
