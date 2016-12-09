@@ -1,3 +1,4 @@
+----------------------------------begin dias tijdcomplexiteit-----------------------------
 Dia 6:
 	f(n) = 14278943n² + 35797n-8
 	g(n) = n³ - 88n² - 53453453n - 12
@@ -87,10 +88,23 @@ dia 29:
 dia 30:
 	thuis doen	
 
-dia 31:
-	T(0,0) = 0 = c
-	T(0,n) = 0 = c
-	T(n,0) = 0 = c
-	T(n,n) = n/2
 
-----------------------------------------einde dias----------------------------------------
+dia 31:
+	Tms(0) = c
+	Tms(1) = c
+	Tms(n) = c + O(n) + O(n/2) + Tmerge(n/2, n/2) + Tms (n/2) + Tms(n/2)
+	Tms(n) = c + O(n) + O(n/2) + Tmerge(n/2, n/2) + 2*Tms (n/2)
+	Tms(n) = O((....) * log n)
+
+	Tmerge(0,0) = c
+	Tmerge(0,n) = c
+	Tmerge(n,0) = c
+	Tmerge(n,n) = c + Tmerge(n-1,m)
+ 		    = c + Tmerge(n,m-1)		=> O(n+m)
+
+	=> Tms(n) = c + O(n) + O(n/2) + O(n/2 + n/2) + 2*Tms (n/2)
+	=> Tms(n) = c + O(n) + 2*Tms (n/2)
+	=> Tms(n) = O(n * log n)
+	=> snelste algoritme!!
+----------------------------------einde dias tijdcomplexiteit-----------------------------
+
