@@ -1,0 +1,20 @@
+get(Pid) ->
+	Pid!{getInfo, R = make.ref()!,self()},
+	receive,
+	{info, R} -> {Info,ok}
+end
+
+
+loop(Info)
+	receive
+	{get, ref}
+
+make ref is iets dat al bestaat, niet zelf schrijven.
+
+
+Examen
+______
+
+=> Toon wat ge hebt en leg uit wat ge begrijpt
+=> Automatiseer/semi-automatisch 
+(hou commando's bij in een text editor zodat het snel gaat en zodat er geen typos zijn)
