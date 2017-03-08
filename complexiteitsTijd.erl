@@ -39,7 +39,7 @@ halveer([X,Y|YS])->[X|halveer(YS)].Th(n+2)=c+Th(n) => O(n/2)=O(n)
 
 ontdubbel([]) -> [];		Tont(0) = c
 ontdubbel([X]) -> [X];	Tont(1) = c
-ontdubbel([X|XS]) ->		Tont(n+1) =c+ Tinin(n) + Tont(n)
+ontdubbel([X|XS]) ->		Tont(n+1) =c+ TisIn(n) + Tont(n)
   case isIn(X,XS) of		Tont(n+1) =c+ O(n) + Tont(n) => O(n²)
     true -> ontdubbel(XS);
     false -> [X | ontdubbel(XS)]

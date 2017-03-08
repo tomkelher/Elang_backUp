@@ -1,21 +1,19 @@
 %%%-------------------------------------------------------------------
-%%% @author Eigenaar
-%%% @copyright (C) 2016, <COMPANY>
+%%% @author Tom Kelher
+%%% @copyright (C) 2017, <COMPANY>
 %%% @doc
 %%%
 %%% @end
-%%% Created : 28. okt 2016 11:14
+%%% Created : 20. jan 2017 17:11
 %%%-------------------------------------------------------------------
--module('klant').
--author("Eigenaar").
-
-
+-module(klant).
+-author("Tom Kelher").
 
 %% API
 -export([create/1,init/1]).
 
 create(Naam) -> PID = spawn(?MODULE,init,[Naam]),
-  logboekje:add(Naam),
+  logboek:add(Naam),
   PID.
 
 
@@ -31,3 +29,4 @@ loop(Args) -> receive
                   loop(Args);
                 stop -> ok
               end.
+
